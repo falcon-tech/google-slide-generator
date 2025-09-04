@@ -1,37 +1,7 @@
-// テンプレートのプレゼンテーションIDをスクリプトプロパティから取得
-const TEMPLATE_PRESENTATION_ID =
-  PropertiesService.getScriptProperties().getProperty(
-    "TEMPLATE_PRESENTATION_ID"
-  );
-
-// テンプレートのスライドIDをスクリプトプロパティから取得
-const TEMPLATE_SLIDE_ID = {
-  title: PropertiesService.getScriptProperties().getProperty(
-    "TEMPLATE_SLIDE_ID_TITLE"
-  ),
-  agenda: PropertiesService.getScriptProperties().getProperty(
-    "TEMPLATE_SLIDE_ID_AGENDA"
-  ),
-  section: PropertiesService.getScriptProperties().getProperty(
-    "TEMPLATE_SLIDE_ID_SECTION"
-  ),
-  compare: PropertiesService.getScriptProperties().getProperty(
-    "TEMPLATE_SLIDE_ID_COMPARE"
-  ),
-  bullet: PropertiesService.getScriptProperties().getProperty(
-    "TEMPLATE_SLIDE_ID_BULLET"
-  ),
-  closing: PropertiesService.getScriptProperties().getProperty(
-    "TEMPLATE_SLIDE_ID_CLOSING"
-  ),
-};
-
 // 既存のスライドを削除するかどうか
 const DELETE_ALREADY_SLIDES = true;
-
 // デバッグモードかどうか
 const DEBUG = false;
-
 // テスト用のスライドデータ
 const testSlideData = [
   {
@@ -140,22 +110,50 @@ function generatePresentation(jsonData) {
 }
 
 /**
+ * スクリプトプロパティからテンプレート設定(プレゼンテーションIDとスライドID)を読み込みする関数。グローバルスコープでスクリプトプロパティを読み込むと、アドオンの初回インストール以降の実行で、遅延か何かで権限エラーでスクリプトプロパティが読み込めないので、関数スコープで読み込むようにしている。
+ * @returns {object} テンプレート設定のオブジェクト
+ */
+function getTemplateConfig() {
+  try {
+    const properties = PropertiesService.getScriptProperties();
+    return {
+      presentationId: properties.getProperty("TEMPLATE_PRESENTATION_ID"),
+      slideId: {
+        title: properties.getProperty("TEMPLATE_SLIDE_ID_TITLE"),
+        agenda: properties.getProperty("TEMPLATE_SLIDE_ID_AGENDA"),
+        section: properties.getProperty("TEMPLATE_SLIDE_ID_SECTION"),
+        compare: properties.getProperty("TEMPLATE_SLIDE_ID_COMPARE"),
+        bullet: properties.getProperty("TEMPLATE_SLIDE_ID_BULLET"),
+        closing: properties.getProperty("TEMPLATE_SLIDE_ID_CLOSING"),
+      },
+    };
+  } catch (error) {
+    Logger.log(`設定の取得に失敗しました: ${error.message}`);
+    throw new Error(
+      "テンプレート設定の読み込みに失敗しました。スクリプトプロパティを確認してください。"
+    );
+  }
+}
+
+/**
  * スライドを生成
  * @param {object} presentation プレゼンテーションのオブジェクト
  * @param {object} data スライドデータのオブジェクト
  */
 function createSlide(presentation, data) {
   try {
+    // テンプレート設定を取得
+    const templateConfig = getTemplateConfig();
     // ソーススライドを取得
     const sourceSlide = getSlide(
-      TEMPLATE_PRESENTATION_ID,
-      TEMPLATE_SLIDE_ID[data.type]
+      templateConfig.presentationId,
+      templateConfig.slideId[data.type]
     );
     // ソーススライドが見つからない場合はエラーを投げる
     if (!sourceSlide) {
       throw new Error(
         `指定されたスライド「${
-          TEMPLATE_SLIDE_ID[data.type]
+          templateConfig.slideId[data.type]
         }」が見つかりませんでした。`
       );
     }
