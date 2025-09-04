@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "push-dev": "cp .clasp.dev.json .clasp.json && clasp push",
+    "push-prd": "cp .clasp.prd.json .clasp.json && clasp push"
+  }
+}

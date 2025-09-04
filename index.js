@@ -1,0 +1,339 @@
+// テンプレートのプレゼンテーションIDをスクリプトプロパティから取得
+const TEMPLATE_PRESENTATION_ID =
+  PropertiesService.getScriptProperties().getProperty(
+    "TEMPLATE_PRESENTATION_ID"
+  );
+
+// テンプレートのスライドIDをスクリプトプロパティから取得
+const TEMPLATE_SLIDE_ID = {
+  title: PropertiesService.getScriptProperties().getProperty(
+    "TEMPLATE_SLIDE_ID_TITLE"
+  ),
+  agenda: PropertiesService.getScriptProperties().getProperty(
+    "TEMPLATE_SLIDE_ID_AGENDA"
+  ),
+  section: PropertiesService.getScriptProperties().getProperty(
+    "TEMPLATE_SLIDE_ID_SECTION"
+  ),
+  compare: PropertiesService.getScriptProperties().getProperty(
+    "TEMPLATE_SLIDE_ID_COMPARE"
+  ),
+  bullet: PropertiesService.getScriptProperties().getProperty(
+    "TEMPLATE_SLIDE_ID_BULLET"
+  ),
+  closing: PropertiesService.getScriptProperties().getProperty(
+    "TEMPLATE_SLIDE_ID_CLOSING"
+  ),
+};
+
+// 既存のスライドを削除するかどうか
+const DELETE_ALREADY_SLIDES = true;
+
+// デバッグモードかどうか
+const DEBUG = false;
+
+// テスト用のスライドデータ
+const testSlideData = [
+  {
+    type: "title",
+    to: "クライアント 御中",
+    title: "メインタイトル",
+    body: "本文",
+    date: "2025.08.29",
+    notes: "スピーカノート",
+  },
+  {
+    type: "agenda",
+    title: "アジェンダ",
+    items: ["アイテム1", "アイテム2", "アイテム3"],
+    notes: "スピーカノート",
+  },
+  {
+    type: "section",
+    title: "章タイトル",
+    notes: "スピーカノート",
+  },
+  {
+    type: "bullet",
+    title: "箇条書き",
+    header: "ヘッダー",
+    items: ["**アイテム1**", "[[アイテム2]]", "アイテム3"],
+    notes: "スピーカノート",
+  },
+  {
+    type: "compare",
+    title: "比較",
+    description: "比較の説明",
+    left_box_header: "左ボックスヘッダー",
+    left_box_items: [
+      "左ボックスアイテム1",
+      "左ボックスアイテム2",
+      "左ボックスアイテム3",
+    ],
+    right_box_header: "右ボックスヘッダー",
+    right_box_items: [
+      "**右ボックス**[[アイテム1]]",
+      "**右ボックスアイテム2**",
+      "[[右ボックスアイテム3]]",
+    ],
+    notes: "スピーカノート",
+  },
+  {
+    type: "closing",
+    notes: "スピーカノート",
+  },
+];
+
+/**
+ * アドオンをインストールした際に実行される関数
+ */
+function onInstall() {
+  onOpen();
+}
+
+/**
+ * プレゼンテーションを開いた際に実行される関数
+ */
+function onOpen() {
+  const menu = SlidesApp.getUi();
+  menu
+    .createAddonMenu()
+    // ユーザがメニューから「プレゼンテーション生成」を選択した際に、showDataInputDialog関数を実行
+    .addItem("プレゼンテーション生成", "showDataInputDialog")
+    .addToUi();
+}
+
+/**
+ * JSONデータ入力用のダイアログを表示
+ */
+function showDataInputDialog() {
+  const html = HtmlService.createTemplateFromFile("dialog")
+    .evaluate()
+    .setWidth(400)
+    .setHeight(300);
+
+  const dialog = SlidesApp.getUi();
+  dialog.showModalDialog(html, "スライドデータを入力");
+}
+
+/**
+ * ユーザーから入力されたJSONデータでプレゼンテーションを生成。クライアントサイドのgeneratePresentation関数から呼び出される
+ * @param {string} jsonData JSON形式のスライドデータ
+ */
+function generatePresentation(jsonData) {
+  try {
+    // ユーザーから入力されたJSONデータをパース。デバッグモードの場合はtestSlideDataを使用
+    const slideData = DEBUG ? testSlideData : JSON.parse(jsonData);
+    // プレゼンテーションを取得
+    const presentation = SlidesApp.getActivePresentation();
+    // 既存のスライドを削除
+    if (DELETE_ALREADY_SLIDES) {
+      const slides = presentation.getSlides();
+      slides.forEach((slide) => slide.remove());
+    }
+    // スライドデータの内容を元に、スライドを生成
+    slideData.forEach((data) => createSlide(presentation, data));
+  } catch (e) {
+    // エラーをダイアログに表示
+    throw e;
+  }
+}
+
+/**
+ * スライドを生成
+ * @param {object} presentation プレゼンテーションのオブジェクト
+ * @param {object} data スライドデータのオブジェクト
+ */
+function createSlide(presentation, data) {
+  try {
+    // ソーススライドを取得
+    const sourceSlide = getSlide(
+      TEMPLATE_PRESENTATION_ID,
+      TEMPLATE_SLIDE_ID[data.type]
+    );
+    // ソーススライドが見つからない場合はエラーを投げる
+    if (!sourceSlide) {
+      throw new Error(
+        `指定されたスライド「${
+          TEMPLATE_SLIDE_ID[data.type]
+        }」が見つかりませんでした。`
+      );
+    }
+    // ソーススライドを複製して、プレゼンテーションに追加
+    const slide = presentation.appendSlide(
+      sourceSlide,
+      SlidesApp.SlideLinkingMode.UNLINKED
+    );
+    // テキストを置き換え
+    switch (data.type) {
+      case "title":
+        slide.replaceAllText("{{to}}", data.to);
+        slide.replaceAllText("{{title}}", data.title);
+        slide.replaceAllText("{{body}}", data.body);
+        slide.replaceAllText("{{date}}", data.date);
+        break;
+      case "agenda":
+        slide.replaceAllText("{{title}}", data.title);
+        slide.replaceAllText("{{items}}", data.items.join("\n"));
+        break;
+      case "section":
+        slide.replaceAllText("{{title}}", data.title);
+        break;
+      case "compare":
+        slide.replaceAllText("{{title}}", data.title);
+        slide.replaceAllText("{{description}}", data.description);
+        slide.replaceAllText("{{left_box_header}}", data.left_box_header);
+        slide.replaceAllText(
+          "{{left_box_items}}",
+          data.left_box_items.join("\n")
+        );
+        slide.replaceAllText("{{right_box_header}}", data.right_box_header);
+        slide.replaceAllText(
+          "{{right_box_items}}",
+          data.right_box_items.join("\n")
+        );
+        break;
+      case "bullet":
+        slide.replaceAllText("{{title}}", data.title);
+        slide.replaceAllText("{{header}}", data.header);
+        slide.replaceAllText("{{items}}", data.items.join("\n"));
+        break;
+      case "closing":
+        break;
+    }
+    // テキスト上の太字と重要語に対してスタイルを適用
+    applyTextStyle(slide);
+    // スピーカーノートを設定
+    if (data.notes) {
+      try {
+        const notesShape = slide.getNotesPage().getSpeakerNotesShape();
+        if (notesShape) {
+          notesShape.getText().setText(data.notes);
+        }
+      } catch (e) {
+        Logger.log(`スピーカーノートの設定に失敗しました: ${e.message}`);
+      }
+    }
+  } catch (e) {
+    Logger.log(`タイトルスライド生成中にエラーが発生しました: ${e.message}`);
+  }
+}
+
+/**
+ * テンプレートプレゼンテーションIDとスライドのオブジェクトIDを指定して、スライドを取得
+ * @param {string} templatePresentationId テンプレートのプレゼンテーションID
+ * @param {string} slideId 取得したいスライドのオブジェクトID
+ * @returns {object | undefined} スライドのオブジェクトを返却。スライドが見つからない場合はundefinedを返却
+ */
+function getSlide(templatePresentationId, slideId) {
+  try {
+    // テンプレートプレゼンテーションを取得
+    const templatePresentation = SlidesApp.openById(templatePresentationId);
+    // テンプレートプレゼンテーションからスライド一覧を取得
+    const slides = templatePresentation.getSlides();
+    // 指定のオブジェクトIDでスライドを取得
+    return slides.find((slide) => {
+      return slide.getObjectId() === slideId;
+    });
+  } catch (e) {
+    Logger.log(`スライド取得中にエラーが発生しました: ${e.message}`);
+  }
+}
+
+/**
+ * スライドのテキストボックス内の太文字、重要語に対してスタイルを適用
+ * @param {object} slide スライドのオブジェクト
+ */
+function applyTextStyle(slide) {
+  try {
+    // スライド内の全図形を取得
+    const shapes = slide.getShapes();
+    // 図形をループ処理
+    shapes.forEach((shape) => {
+      // テキストボックスのみを対象とする
+      if (shape.getShapeType() === SlidesApp.ShapeType.TEXT_BOX) {
+        // テキストボックス内のテキストを取得
+        const text = shape.getText().asString();
+        // 太字(**で始まる) or 重要語([[で始まる)が含まれているかチェック
+        if (text.includes("**") || text.includes("[[")) {
+          const textRange = shape.getText();
+          // 全てのマーカーを検索して位置を記録する配列
+          const markers = [];
+          // 太字マーカーを検索
+          const boldPattern = /\*\*(.+?)\*\*/g;
+          let match;
+          while ((match = boldPattern.exec(text)) !== null) {
+            markers.push({
+              start: match.index,
+              end: match.index + match[0].length,
+              content: match[1],
+              type: "bold",
+            });
+          }
+          // 重要語マーカーを検索
+          const importantPattern = /\[\[(.+?)\]\]/g;
+          while ((match = importantPattern.exec(text)) !== null) {
+            markers.push({
+              start: match.index,
+              end: match.index + match[0].length,
+              content: match[1],
+              type: "important",
+            });
+          }
+          // 位置順でソート（前から処理するため昇順）
+          markers.sort((a, b) => a.start - b.start);
+          // 処理後のテキスト
+          let processedText = text;
+          // スタイル範囲を記録する配列
+          const styleRanges = [];
+          // 累積オフセット（除去された文字数の合計）
+          let cumulativeOffset = 0;
+          // 前から順にマーカーを処理
+          markers.forEach((marker) => {
+            // オフセットを適用した実際の位置
+            const actualStart = marker.start - cumulativeOffset;
+            const actualEnd = marker.end - cumulativeOffset;
+            // マーカーを除去してコンテンツのみにする
+            processedText =
+              processedText.substring(0, actualStart) +
+              marker.content +
+              processedText.substring(actualEnd);
+            // スタイル範囲を記録（オフセット適用後の位置で）
+            styleRanges.push({
+              start: actualStart,
+              end: actualStart + marker.content.length,
+              type: marker.type,
+            });
+            // 除去された文字数を累積オフセットに加算
+            cumulativeOffset +=
+              marker.end - marker.start - marker.content.length;
+          });
+          // マーカー除去後のテキストを設定
+          textRange.setText(processedText);
+          // スタイルを適用
+          styleRanges.forEach((styleRange) => {
+            // 範囲を取得
+            const textSubRange = textRange.getRange(
+              styleRange.start,
+              styleRange.end
+            );
+            if (textSubRange) {
+              const textStyle = textSubRange.getTextStyle();
+              // 太字の場合
+              if (styleRange.type === "bold") {
+                textStyle.setBold(true);
+              }
+              // 重要語の場合
+              else if (styleRange.type === "important") {
+                textStyle.setBold(true);
+                textStyle.setForegroundColor("#0E7BCF");
+              }
+            }
+          });
+        }
+      }
+    });
+  } catch (e) {
+    Logger.log(`テキストスタイル適用中にエラーが発生しました: ${e.message}`);
+  }
+}

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top" />
+    <!-- GASでダイアログ表示する場合に必要な処理-->
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+
+      textarea {
+        width: 100%;
+        height: 150px;
+        padding: 8px;
+        font-family: monospace;
+        font-size: 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+
+      .button-container {
+        margin-top: 15px;
+        text-align: right;
+      }
+
+      button {
+        margin-left: 8px;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .generate-btn {
+        background-color: #1a73e8;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <label for="slideDataInput">JSONデータ:</label>
+      <textarea
+        id="slideDataInput"
+        placeholder="JSON形式のスライドデータを入力してください"
+      ></textarea>
+
+      <div class="button-container">
+        <button class="generate-btn" onclick="generatePresentation()">
+          生成
+        </button>
+      </div>
+    </div>
+    <script>
+      // 生成ボタンをクリックした際の処理
+      function generatePresentation() {
+        // ユーザの入力値から不要な空白を除去して、jsonDataに格納
+        const jsonData = document.getElementById("slideDataInput").value.trim();
+        // 入力チェック
+        if (!jsonData) {
+          alert("JSONデータを入力してください");
+          return;
+        }
+        // 簡易バリデーション。JSON形式であることを確認
+        try {
+          JSON.parse(jsonData);
+        } catch (e) {
+          alert("正しいJSON形式で入力してください\nエラー: " + e.message);
+          return;
+        }
+        // 生成ボタンを無効化してローディング状態にする
+        const button = document.querySelector(".generate-btn");
+        button.disabled = true;
+        button.textContent = "生成中...";
+        // サーバーサイド(GAS)のgeneratePresentation関数を呼び出し
+        google.script.run
+          .withSuccessHandler(onSuccess)
+          .withFailureHandler(onFailure)
+          .generatePresentation(jsonData);
+      }
+      // 生成成功時の処理
+      function onSuccess() {
+        // 成功時はダイアログを閉じる
+        google.script.host.close();
+      }
+      // 生成失敗時の処理
+      function onFailure(error) {
+        // エラー表示
+        alert("エラーが発生しました: " + error.message);
+        // 生成ボタンを元に戻す
+        const button = document.querySelector(".generate-btn");
+        button.disabled = false;
+        button.textContent = "生成";
+      }
+    </script>
+  </body>
+</html>
