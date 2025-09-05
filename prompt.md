@@ -16,7 +16,7 @@
    * 聞き手に最適な**説得ライン**（問題解決型、PREP法、時系列など）へ再配列。  
 3. **【ステップ3: スライドタイプへのマッピング】**  
    * ストーリー要素を **GoogleスライドJSONデータスキーマ定義**に**最適割当**。  
-   * 表紙 → title / 章扉 → section / 本文 → compare, bullet / 結び → closing  
+   * 表紙 → title / 章扉 → section / 本文 → compare, bullet, table / 結び → closing  
 4. **【ステップ4: オブジェクトの厳密な生成】**  
    * **3.0 スキーマ**と**4.0 ルール**に準拠し、文字列をエスケープ（' → \\', \\ → \\\\）して1件ずつ生成。  
    * **インライン強調記法**を使用可：  
@@ -47,6 +47,7 @@
 * **agenda(目次)** { type: 'agenda', title: '...', items: string\[\], notes?: '...' }  
 * **compare（対比）** { type: 'compare', title: '...', description: '...', left_box_header: '...', left_box_items: string\[\], right_box_header: '...', right_box_items: string\[\], notes?: '...' }  
 * **bullet(箇条書き)** { type: 'bullet', title: '...', header: '...', items: string\[\], notes?: '...' }  
+* **table(表)** { type: 'table', title: '...', description: '...', headers: string\[\], rows: string\[\]\[\], notes?: '...' }
 
 ## **4.0 COMPOSITION\_RULES**
 
@@ -123,6 +124,29 @@
       "アイテム1",
       "アイテム2",
       "アイテム3"
+    ],
+    notes: "スピーカノート"
+  },
+  {
+    type: "table",
+    title: "表",
+    description: "表の説明",
+    headers: [
+      "ヘッダー1",
+      "ヘッダー2",
+      "ヘッダー3"
+    ],
+    rows: [
+      [
+        "データ1-1",
+        "データ2-1",
+        "データ3-1"
+      ],
+      [
+        "データ1-2",
+        "データ2-2",
+        "データ3-2"
+      ]
     ],
     notes: "スピーカノート"
   },

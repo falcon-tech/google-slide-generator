@@ -49,6 +49,18 @@ const testSlideData = [
     notes: "スピーカノート",
   },
   {
+    type: "table",
+    title: "テーブル",
+    description: "テーブルの説明",
+    headers: ["ヘッダー1", "ヘッダー2", "ヘッダー3", "ヘッダー4"],
+    rows: [
+      ["データ1-1", "データ2-1", "データ3-1", "データ4-1"],
+      ["データ1-2", "データ2-2", "データ3-2", "データ4-2"],
+      ["データ1-3", "データ2-3", "データ3-3", "データ4-3"],
+    ],
+    notes: "スピーカノート",
+  },
+  {
     type: "closing",
     notes: "スピーカノート",
   },
@@ -124,6 +136,7 @@ function getTemplateConfig() {
         section: properties.getProperty("TEMPLATE_SLIDE_ID_SECTION"),
         compare: properties.getProperty("TEMPLATE_SLIDE_ID_COMPARE"),
         bullet: properties.getProperty("TEMPLATE_SLIDE_ID_BULLET"),
+        table: properties.getProperty("TEMPLATE_SLIDE_ID_TABLE"),
         closing: properties.getProperty("TEMPLATE_SLIDE_ID_CLOSING"),
       },
     };
@@ -195,6 +208,11 @@ function createSlide(presentation, data) {
         slide.replaceAllText("{{title}}", data.title);
         slide.replaceAllText("{{header}}", data.header);
         slide.replaceAllText("{{items}}", data.items.join("\n"));
+        break;
+      case "table":
+        slide.replaceAllText("{{title}}", data.title);
+        slide.replaceAllText("{{description}}", data.description);
+        handleTableSlide(slide, data.headers, data.rows);
         break;
       case "closing":
         break;
