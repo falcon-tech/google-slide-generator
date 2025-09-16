@@ -103,6 +103,8 @@ function showDataInputDialog() {
  * @param {string} jsonData JSON形式のスライドデータ
  */
 function generatePresentation(jsonData) {
+  // 処理の開始をログに出力
+  Logger.log(`プレゼンテーション生成を開始します`);
   try {
     // ユーザーから入力されたJSONデータをパース。デバッグモードの場合はtestSlideDataを使用
     const slideData = DEBUG ? testSlideData : JSON.parse(jsonData);
@@ -110,13 +112,18 @@ function generatePresentation(jsonData) {
     const presentation = SlidesApp.getActivePresentation();
     // 既存のスライドを削除
     if (DELETE_ALREADY_SLIDES) {
+      Logger.log(`既存のスライドを削除します`);
       const slides = presentation.getSlides();
       slides.forEach((slide) => slide.remove());
     }
     // スライドデータの内容を元に、スライドを生成
     slideData.forEach((data) => createSlide(presentation, data));
+    // 処理の完了をログに出力
+    Logger.log(`プレゼンテーション生成が完了しました`);
   } catch (e) {
-    // エラーをダイアログに表示
+    // 処理の失敗をログに出力
+    Logger.log(`プレゼンテーション生成中にエラーが発生しました: ${e.message}`);
+    // エラーを返却(ダイアログに表示)
     throw e;
   }
 }
@@ -126,6 +133,8 @@ function generatePresentation(jsonData) {
  * @returns {object} テンプレート設定のオブジェクト
  */
 function getTemplateConfig() {
+  // 処理の開始をログに出力
+  Logger.log(`テンプレート設定を取得します`);
   try {
     const properties = PropertiesService.getScriptProperties();
     return {
@@ -140,11 +149,9 @@ function getTemplateConfig() {
         closing: properties.getProperty("TEMPLATE_SLIDE_ID_CLOSING"),
       },
     };
-  } catch (error) {
-    Logger.log(`設定の取得に失敗しました: ${error.message}`);
-    throw new Error(
-      "テンプレート設定の読み込みに失敗しました。スクリプトプロパティを確認してください。"
-    );
+  } catch (e) {
+    // 処理の失敗をログに出力
+    Logger.log(`テンプレート設定の取得に失敗しました: ${e.message}`);
   }
 }
 
@@ -154,6 +161,8 @@ function getTemplateConfig() {
  * @param {object} data スライドデータのオブジェクト
  */
 function createSlide(presentation, data) {
+  // 処理の開始をログに出力
+  Logger.log(`スライド(${data.type})を生成します`);
   try {
     // テンプレート設定を取得
     const templateConfig = getTemplateConfig();
@@ -221,17 +230,18 @@ function createSlide(presentation, data) {
     applyTextStyle(slide);
     // スピーカーノートを設定
     if (data.notes) {
-      try {
-        const notesShape = slide.getNotesPage().getSpeakerNotesShape();
-        if (notesShape) {
-          notesShape.getText().setText(data.notes);
-        }
-      } catch (e) {
-        Logger.log(`スピーカーノートの設定に失敗しました: ${e.message}`);
+      const notesShape = slide.getNotesPage().getSpeakerNotesShape();
+      if (notesShape) {
+        notesShape.getText().setText(data.notes);
       }
     }
+    // 処理の完了をログに出力
+    Logger.log(`スライド(${data.type})の生成が完了しました`);
   } catch (e) {
-    Logger.log(`タイトルスライド生成中にエラーが発生しました: ${e.message}`);
+    // 処理の失敗をログに出力
+    Logger.log(
+      `スライド(${data.type})の生成中にエラーが発生しました: ${e.message}`
+    );
   }
 }
 
@@ -242,17 +252,20 @@ function createSlide(presentation, data) {
  * @returns {object | undefined} スライドのオブジェクトを返却。スライドが見つからない場合はundefinedを返却
  */
 function getSlide(templatePresentationId, slideId) {
+  // 処理の開始をログに出力
+  Logger.log(`テンプレートスライド(${slideId})を取得します`);
   try {
     // テンプレートプレゼンテーションを取得
     const templatePresentation = SlidesApp.openById(templatePresentationId);
     // テンプレートプレゼンテーションからスライド一覧を取得
     const slides = templatePresentation.getSlides();
     // 指定のオブジェクトIDでスライドを取得
-    return slides.find((slide) => {
-      return slide.getObjectId() === slideId;
-    });
+    return slides.find((slide) => slide.getObjectId() === slideId);
   } catch (e) {
-    Logger.log(`スライド取得中にエラーが発生しました: ${e.message}`);
+    // 処理の失敗をログに出力
+    Logger.log(
+      `テンプレートスライド(${slideId})の取得中にエラーが発生しました: ${e.message}`
+    );
   }
 }
 
@@ -261,6 +274,8 @@ function getSlide(templatePresentationId, slideId) {
  * @param {object} slide スライドのオブジェクト
  */
 function applyTextStyle(slide) {
+  // 処理の開始をログに出力
+  Logger.log(`スライドのテキストスタイル適用を開始します`);
   try {
     // スライド内の全図形を取得
     const shapes = slide.getShapes();
@@ -349,7 +364,10 @@ function applyTextStyle(slide) {
         }
       }
     });
+    // 処理の完了をログに出力
+    Logger.log(`スライドのテキストスタイル適用が完了しました`);
   } catch (e) {
+    // 処理の失敗をログに出力
     Logger.log(`テキストスタイル適用中にエラーが発生しました: ${e.message}`);
   }
 }

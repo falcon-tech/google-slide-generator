@@ -1,12 +1,12 @@
 /**
  * テーブルスライドを処理し、行・列数を動的に調整してデータを入力
  * @param {object} slide スライドのオブジェクト
- * @param {object} headers ヘッダーデータ（配列）
- * @param {object} rows 行データ（配列）
+ * @param {array} headers ヘッダーデータの配列
+ * @param {array} rows 行データの配列
  */
 function handleTableSlide(slide, headers, rows) {
+  // 処理の開始をログに出力
   Logger.log("テーブルスライドの処理を開始します");
-
   try {
     // スライド内の表を取得
     const tables = slide.getTables();
@@ -18,10 +18,6 @@ function handleTableSlide(slide, headers, rows) {
     // 表の目標の行数・列数を計算
     const targetRows = rows.length + 1; // ヘッダー行 + データ行
     const targetCols = headers.length;
-    // 表の調整内容をログに出力
-    Logger.log(
-      `表の調整: 現在の行数x列数(${currentRows}×${currentCols}) → 目標の行数x列数(${targetRows}×${targetCols})`
-    );
     // 列数の調整
     adjustTableColumns(table, currentCols, targetCols);
     // 行数の調整
@@ -44,9 +40,10 @@ function handleTableSlide(slide, headers, rows) {
         cellText.setText(String(rowData?.[col] || ""));
       }
     });
-
+    // 処理の完了をログに出力
     Logger.log("テーブルスライドの処理が完了しました");
   } catch (e) {
+    // 処理の失敗をログに出力
     Logger.log(`テーブルスライドの処理中にエラーが発生しました: ${e.message}`);
   }
 }
@@ -58,17 +55,19 @@ function handleTableSlide(slide, headers, rows) {
  * @param {number} targetCols 目標の列数
  */
 function adjustTableColumns(table, currentCols, targetCols) {
+  // 処理の開始をログに出力
   Logger.log(`列の調整を開始します`);
-
   try {
     if (targetCols > currentCols) {
       Array.from({ length: targetCols - currentCols }).forEach((_, index) => {
         const insertColumnIndex = currentCols + index;
         table.insertColumn(insertColumnIndex);
-        Logger.log(`列を追加しました: ${insertColumnIndex + 1}列目`);
       });
     }
+    // 処理の完了をログに出力
+    Logger.log(`列の調整が完了しました`);
   } catch (e) {
+    // 処理の失敗をログに出力
     Logger.log(`列の調整中にエラーが発生しました: ${e.message}`);
   }
 }
@@ -80,17 +79,19 @@ function adjustTableColumns(table, currentCols, targetCols) {
  * @param {number} targetRows 目標の行数
  */
 function adjustTableRows(table, currentRows, targetRows) {
+  // 処理の開始をログに出力
   Logger.log(`行の調整を開始します`);
-
   try {
     if (targetRows > currentRows) {
       Array.from({ length: targetRows - currentRows }).forEach((_, index) => {
         const insertRowIndex = currentRows + index;
         table.insertRow(insertRowIndex);
-        Logger.log(`行を追加しました: ${insertRowIndex + 1}行目`);
       });
     }
+    // 処理の完了をログに出力
+    Logger.log(`行の調整が完了しました`);
   } catch (e) {
+    // 処理の失敗をログに出力
     Logger.log(`行の調整中にエラーが発生しました: ${e.message}`);
   }
 }
