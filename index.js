@@ -227,7 +227,7 @@ function createSlide(presentation, data) {
         break;
     }
     // テキスト上の太字と重要語に対してスタイルを適用
-    applyTextStyle(slide);
+    handleTextStyle(slide);
     // スピーカーノートを設定
     if (data.notes) {
       const notesShape = slide.getNotesPage().getSpeakerNotesShape();
@@ -266,108 +266,5 @@ function getSlide(templatePresentationId, slideId) {
     Logger.log(
       `テンプレートスライド(${slideId})の取得中にエラーが発生しました: ${e.message}`
     );
-  }
-}
-
-/**
- * スライドのテキストボックス内の太文字、重要語に対してスタイルを適用
- * @param {object} slide スライドのオブジェクト
- */
-function applyTextStyle(slide) {
-  // 処理の開始をログに出力
-  Logger.log(`スライドのテキストスタイル適用を開始します`);
-  try {
-    // スライド内の全図形を取得
-    const shapes = slide.getShapes();
-    // 図形をループ処理
-    shapes.forEach((shape) => {
-      // テキストボックスのみを対象とする
-      if (shape.getShapeType() === SlidesApp.ShapeType.TEXT_BOX) {
-        // テキストボックス内のテキストを取得
-        const text = shape.getText().asString();
-        // 太字(**で始まる) or 重要語([[で始まる)が含まれているかチェック
-        if (text.includes("**") || text.includes("[[")) {
-          const textRange = shape.getText();
-          // 全てのマーカーを検索して位置を記録する配列
-          const markers = [];
-          // 太字マーカーを検索
-          const boldPattern = /\*\*(.+?)\*\*/g;
-          let match;
-          while ((match = boldPattern.exec(text)) !== null) {
-            markers.push({
-              start: match.index,
-              end: match.index + match[0].length,
-              content: match[1],
-              type: "bold",
-            });
-          }
-          // 重要語マーカーを検索
-          const importantPattern = /\[\[(.+?)\]\]/g;
-          while ((match = importantPattern.exec(text)) !== null) {
-            markers.push({
-              start: match.index,
-              end: match.index + match[0].length,
-              content: match[1],
-              type: "important",
-            });
-          }
-          // 位置順でソート（前から処理するため昇順）
-          markers.sort((a, b) => a.start - b.start);
-          // 処理後のテキスト
-          let processedText = text;
-          // スタイル範囲を記録する配列
-          const styleRanges = [];
-          // 累積オフセット（除去された文字数の合計）
-          let cumulativeOffset = 0;
-          // 前から順にマーカーを処理
-          markers.forEach((marker) => {
-            // オフセットを適用した実際の位置
-            const actualStart = marker.start - cumulativeOffset;
-            const actualEnd = marker.end - cumulativeOffset;
-            // マーカーを除去してコンテンツのみにする
-            processedText =
-              processedText.substring(0, actualStart) +
-              marker.content +
-              processedText.substring(actualEnd);
-            // スタイル範囲を記録（オフセット適用後の位置で）
-            styleRanges.push({
-              start: actualStart,
-              end: actualStart + marker.content.length,
-              type: marker.type,
-            });
-            // 除去された文字数を累積オフセットに加算
-            cumulativeOffset +=
-              marker.end - marker.start - marker.content.length;
-          });
-          // マーカー除去後のテキストを設定
-          textRange.setText(processedText);
-          // スタイルを適用
-          styleRanges.forEach((styleRange) => {
-            // 範囲を取得
-            const textSubRange = textRange.getRange(
-              styleRange.start,
-              styleRange.end
-            );
-            if (textSubRange) {
-              const textStyle = textSubRange.getTextStyle();
-              // 太字の場合
-              if (styleRange.type === "bold") {
-                textStyle.setBold(true);
-              }
-              // 重要語の場合
-              else if (styleRange.type === "important") {
-                textStyle.setBold(true);
-                textStyle.setForegroundColor("#0E7BCF");
-              }
-            }
-          });
-        }
-      }
-    });
-    // 処理の完了をログに出力
-    Logger.log(`スライドのテキストスタイル適用が完了しました`);
-  } catch (e) {
-    // 処理の失敗をログに出力
-    Logger.log(`テキストスタイル適用中にエラーが発生しました: ${e.message}`);
   }
 }
