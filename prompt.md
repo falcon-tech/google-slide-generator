@@ -16,7 +16,7 @@
    * 聞き手に最適な**説得ライン**（問題解決型、PREP法、時系列など）へ再配列
 3. **【ステップ3: スライドタイプへのマッピング】**
    * ストーリー要素を **GoogleスライドJSONデータスキーマ定義**に**最適割当**
-   * 表紙 → title / 章扉 → section / 本文 → compare, bullet, table / 結び → closing
+   * 表紙 → title / 章扉 → section / 本文 → compare_two_boxes, compare_three_boxes, compare_four_boxes, bullet, table / 結び → closing
 4. **【ステップ4: オブジェクトの厳密な生成】**
    * **3.0 スキーマ**と**4.0 ルール**に準拠し、文字列をエスケープ（' → \\', \\ → \\\\）して1件ずつ生成
    * **インライン強調記法**を使用可：
@@ -45,7 +45,9 @@
 **本文パターン（必要に応じて選択）**
 
 * **agenda(目次)** { type: 'agenda', title: '...', items: string\[\], notes?: '...' }
-* **compare（対比）** { type: 'compare', title: '...', description: '...', left_box_header: '...', left_box_items: string\[\], right_box_header: '...', right_box_items: string\[\], notes?: '...' }
+* **compare_two_boxes（2つの比較）** { type: 'compare_two_boxes', title: '...', description: '...', box1_header: '...', box1_items: string\[\], box2_header: '...', box2_items: string\[\], notes?: '...' }
+* **compare_three_boxes（3つの比較）** { type: 'compare_three_boxes', title: '...', description: '...', box1_header: '...', box1_items: string\[\], box2_header: '...', box2_items: string\[\], box3_header: '...', box3_items: string\[\], notes?: '...' }
+* **compare_four_boxes（4つの比較）** { type: 'compare_four_boxes', title: '...', description: '...', box1_header: '...', box1_items: string\[\], box2_header: '...', box2_items: string\[\], box3_header: '...', box3_items: string\[\], box4_header: '...', box4_items: string\[\], notes?: '...' }
 * **bullet(箇条書き)** { type: 'bullet', title: '...', header: '...', items: string\[\], notes?: '...' }
 * **table(表)** { type: 'table', title: '...', description: '...', headers: string\[\], rows: string\[\]\[\], notes?: '...' }
 
@@ -100,20 +102,92 @@
     notes: "スピーカノート"
   },
   {
-    type: "compare",
+    type: "compare_two_boxes",
     title: "比較",
     description: "比較の説明",
-    left_box_header: "左ボックスヘッダー",
-    left_box_items: [
-      "左ボックスアイテム1",
-      "左ボックスアイテム2",
-      "左ボックスアイテム3"
+    box1_header: "ボックス1ヘッダー",
+    box1_items: [
+      "ボックス1アイテム1",
+      "ボックス1アイテム2",
+      "ボックス1アイテム3"
     ],
-    right_box_header: "右ボックスヘッダー",
-    right_box_items: [
-      "右ボックスアイテム1",
-      "右ボックスアイテム2",
-      "右ボックスアイテム3"
+    box2_header: "ボックス2ヘッダー",
+    box2_items: [
+      "ボックス2アイテム1",
+      "ボックス2アイテム2",
+      "ボックス2アイテム3"
+    ],
+    notes: "スピーカノート"
+  },
+  {
+    type: "compare_two_boxes",
+    title: "比較",
+    description: "比較の説明",
+    box1_header: "ボックス1ヘッダー",
+    box1_items: [
+      "ボックス1アイテム1",
+      "ボックス1アイテム2",
+      "ボックス1アイテム3"
+    ],
+    box2_header: "ボックス2ヘッダー",
+    box2_items: [
+      "**ボックス2**[[アイテム1]]",
+      "**ボックス2アイテム2**",
+      "[[ボックス2アイテム3]]"
+    ],
+    notes: "スピーカノート"
+  },
+  {
+    type: "compare_three_boxes",
+    title: "比較",
+    description: "比較の説明",
+    box1_header: "ボックス1ヘッダー",
+    box1_items: [
+      "ボックス1アイテム1",
+      "ボックス1アイテム2",
+      "ボックス1アイテム3"
+    ],
+    box2_header: "ボックス2ヘッダー",
+    box2_items: [
+      "**ボックス2**[[アイテム1]]",
+      "**ボックス2アイテム2**",
+      "[[ボックス2アイテム3]]"
+    ],
+    box3_header: "ボックス3ヘッダー",
+    box3_items: [
+      "**ボックス3**[[アイテム1]]",
+      "**ボックス3アイテム2**",
+      "[[ボックス3アイテム3]]"
+    ],
+    notes: "スピーカノート"
+  },
+  {
+    type: "compare_four_boxes",
+    title: "比較",
+    description: "比較の説明",
+    box1_header: "ボックス1ヘッダー",
+    box1_items: [
+      "ボックス1アイテム1",
+      "ボックス1アイテム2",
+      "ボックス1アイテム3"
+    ],
+    box2_header: "ボックス2ヘッダー",
+    box2_items: [
+      "**ボックス2**[[アイテム1]]",
+      "**ボックス2アイテム2**",
+      "[[ボックス2アイテム3]]"
+    ],
+    box3_header: "ボックス3ヘッダー",
+    box3_items: [
+      "**ボックス3**[[アイテム1]]",
+      "**ボックス3アイテム2**",
+      "[[ボックス3アイテム3]]"
+    ],
+    box4_header: "ボックス4ヘッダー",
+    box4_items: [
+      "**ボックス4**[[アイテム1]]",
+      "**ボックス4アイテム2**",
+      "[[ボックス4アイテム3]]"
     ],
     notes: "スピーカノート"
   },

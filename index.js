@@ -31,20 +31,74 @@ const testSlideData = [
     notes: "スピーカノート",
   },
   {
-    type: "compare",
+    type: "compare_two_boxes",
     title: "比較",
     description: "比較の説明",
-    left_box_header: "左ボックスヘッダー",
-    left_box_items: [
-      "左ボックスアイテム1",
-      "左ボックスアイテム2",
-      "左ボックスアイテム3",
+    box1_header: "ボックス1ヘッダー",
+    box1_items: [
+      "ボックス1アイテム1",
+      "ボックス1アイテム2",
+      "ボックス1アイテム3",
     ],
-    right_box_header: "右ボックスヘッダー",
-    right_box_items: [
-      "**右ボックス**[[アイテム1]]",
-      "**右ボックスアイテム2**",
-      "[[右ボックスアイテム3]]",
+    box2_header: "ボックス2ヘッダー",
+    box2_items: [
+      "**ボックス2**[[アイテム1]]",
+      "**ボックス2アイテム2**",
+      "[[ボックス2アイテム3]]",
+    ],
+    notes: "スピーカノート",
+  },
+  {
+    type: "compare_three_boxes",
+    title: "比較",
+    description: "比較の説明",
+    box1_header: "ボックス1ヘッダー",
+    box1_items: [
+      "ボックス1アイテム1",
+      "ボックス1アイテム2",
+      "ボックス1アイテム3",
+    ],
+    box2_header: "ボックス2ヘッダー",
+    box2_items: [
+      "**ボックス2**[[アイテム1]]",
+      "**ボックス2アイテム2**",
+      "[[ボックス2アイテム3]]",
+    ],
+    box3_header: "ボックス3ヘッダー",
+    box3_items: [
+      "**ボックス3**[[アイテム1]]",
+      "**ボックス3アイテム2**",
+      "[[ボックス3アイテム3]]",
+    ],
+    notes: "スピーカノート",
+  },
+  {
+    type: "compare_four_boxes",
+    title: "比較",
+    description: "比較の説明",
+    box1_header: "ボックス1ヘッダー",
+    box1_items: [
+      "ボックス1アイテム1",
+      "ボックス1アイテム2",
+      "ボックス1アイテム3",
+    ],
+    box2_header: "ボックス2ヘッダー",
+    box2_items: [
+      "**ボックス2**[[アイテム1]]",
+      "**ボックス2アイテム2**",
+      "[[ボックス2アイテム3]]",
+    ],
+    box3_header: "ボックス3ヘッダー",
+    box3_items: [
+      "**ボックス3**[[アイテム1]]",
+      "**ボックス3アイテム2**",
+      "[[ボックス3アイテム3]]",
+    ],
+    box4_header: "ボックス4ヘッダー",
+    box4_items: [
+      "**ボックス4**[[アイテム1]]",
+      "**ボックス4アイテム2**",
+      "[[ボックス4アイテム3]]",
     ],
     notes: "スピーカノート",
   },
@@ -142,7 +196,15 @@ function getTemplateConfig() {
       title: properties.getProperty("TEMPLATE_SLIDE_ID_TITLE"),
       agenda: properties.getProperty("TEMPLATE_SLIDE_ID_AGENDA"),
       section: properties.getProperty("TEMPLATE_SLIDE_ID_SECTION"),
-      compare: properties.getProperty("TEMPLATE_SLIDE_ID_COMPARE"),
+      compare_two_boxes: properties.getProperty(
+        "TEMPLATE_SLIDE_ID_COMPARE_TWO_BOXES"
+      ),
+      compare_three_boxes: properties.getProperty(
+        "TEMPLATE_SLIDE_ID_COMPARE_THREE_BOXES"
+      ),
+      compare_four_boxes: properties.getProperty(
+        "TEMPLATE_SLIDE_ID_COMPARE_FOUR_BOXES"
+      ),
       bullet: properties.getProperty("TEMPLATE_SLIDE_ID_BULLET"),
       table: properties.getProperty("TEMPLATE_SLIDE_ID_TABLE"),
       closing: properties.getProperty("TEMPLATE_SLIDE_ID_CLOSING"),
@@ -193,19 +255,35 @@ function createSlide(presentation, data) {
     case "section":
       slide.replaceAllText("{{title}}", data.title);
       break;
-    case "compare":
+    case "compare_two_boxes":
       slide.replaceAllText("{{title}}", data.title);
       slide.replaceAllText("{{description}}", data.description);
-      slide.replaceAllText("{{left_box_header}}", data.left_box_header);
-      slide.replaceAllText(
-        "{{left_box_items}}",
-        data.left_box_items.join("\n")
-      );
-      slide.replaceAllText("{{right_box_header}}", data.right_box_header);
-      slide.replaceAllText(
-        "{{right_box_items}}",
-        data.right_box_items.join("\n")
-      );
+      slide.replaceAllText("{{box1_header}}", data.box1_header);
+      slide.replaceAllText("{{box1_items}}", data.box1_items.join("\n"));
+      slide.replaceAllText("{{box2_header}}", data.box2_header);
+      slide.replaceAllText("{{box2_items}}", data.box2_items.join("\n"));
+      break;
+    case "compare_three_boxes":
+      slide.replaceAllText("{{title}}", data.title);
+      slide.replaceAllText("{{description}}", data.description);
+      slide.replaceAllText("{{box1_header}}", data.box1_header);
+      slide.replaceAllText("{{box1_items}}", data.box1_items.join("\n"));
+      slide.replaceAllText("{{box2_header}}", data.box2_header);
+      slide.replaceAllText("{{box2_items}}", data.box2_items.join("\n"));
+      slide.replaceAllText("{{box3_header}}", data.box3_header);
+      slide.replaceAllText("{{box3_items}}", data.box3_items.join("\n"));
+      break;
+    case "compare_four_boxes":
+      slide.replaceAllText("{{title}}", data.title);
+      slide.replaceAllText("{{description}}", data.description);
+      slide.replaceAllText("{{box1_header}}", data.box1_header);
+      slide.replaceAllText("{{box1_items}}", data.box1_items.join("\n"));
+      slide.replaceAllText("{{box2_header}}", data.box2_header);
+      slide.replaceAllText("{{box2_items}}", data.box2_items.join("\n"));
+      slide.replaceAllText("{{box3_header}}", data.box3_header);
+      slide.replaceAllText("{{box3_items}}", data.box3_items.join("\n"));
+      slide.replaceAllText("{{box4_header}}", data.box4_header);
+      slide.replaceAllText("{{box4_items}}", data.box4_items.join("\n"));
       break;
     case "bullet":
       slide.replaceAllText("{{title}}", data.title);
