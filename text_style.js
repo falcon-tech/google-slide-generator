@@ -5,21 +5,16 @@
 function handleTextStyle(slide) {
   // 処理の開始をログに出力
   Logger.log(`スライドのテキストスタイル適用を開始します`);
-  try {
-    // スライド内の全図形を取得
-    const shapes = slide.getShapes();
-    // テキストボックスのみを対象とした、処理を実施
-    shapes.forEach((shape) => {
-      if (shape.getShapeType() === SlidesApp.ShapeType.TEXT_BOX) {
-        processTextBox(shape);
-      }
-    });
-    // 処理の完了をログに出力
-    Logger.log(`スライドのテキストスタイル適用が完了しました`);
-  } catch (e) {
-    // 処理の失敗をログに出力
-    Logger.log(`テキストスタイル適用中にエラーが発生しました: ${e.message}`);
-  }
+  // スライド内の全図形を取得
+  const shapes = slide.getShapes();
+  // テキストボックスのみを対象とした、処理を実施
+  shapes.forEach((shape) => {
+    if (shape.getShapeType() === SlidesApp.ShapeType.TEXT_BOX) {
+      processTextBox(shape);
+    }
+  });
+  // 処理の完了をログに出力
+  Logger.log(`スライドのテキストスタイル適用が完了しました`);
 }
 
 /**

@@ -135,24 +135,19 @@ function generatePresentation(jsonData) {
 function getTemplateConfig() {
   // 処理の開始をログに出力
   Logger.log(`テンプレート設定を取得します`);
-  try {
-    const properties = PropertiesService.getScriptProperties();
-    return {
-      presentationId: properties.getProperty("TEMPLATE_PRESENTATION_ID"),
-      slideId: {
-        title: properties.getProperty("TEMPLATE_SLIDE_ID_TITLE"),
-        agenda: properties.getProperty("TEMPLATE_SLIDE_ID_AGENDA"),
-        section: properties.getProperty("TEMPLATE_SLIDE_ID_SECTION"),
-        compare: properties.getProperty("TEMPLATE_SLIDE_ID_COMPARE"),
-        bullet: properties.getProperty("TEMPLATE_SLIDE_ID_BULLET"),
-        table: properties.getProperty("TEMPLATE_SLIDE_ID_TABLE"),
-        closing: properties.getProperty("TEMPLATE_SLIDE_ID_CLOSING"),
-      },
-    };
-  } catch (e) {
-    // 処理の失敗をログに出力
-    Logger.log(`テンプレート設定の取得に失敗しました: ${e.message}`);
-  }
+  const properties = PropertiesService.getScriptProperties();
+  return {
+    presentationId: properties.getProperty("TEMPLATE_PRESENTATION_ID"),
+    slideId: {
+      title: properties.getProperty("TEMPLATE_SLIDE_ID_TITLE"),
+      agenda: properties.getProperty("TEMPLATE_SLIDE_ID_AGENDA"),
+      section: properties.getProperty("TEMPLATE_SLIDE_ID_SECTION"),
+      compare: properties.getProperty("TEMPLATE_SLIDE_ID_COMPARE"),
+      bullet: properties.getProperty("TEMPLATE_SLIDE_ID_BULLET"),
+      table: properties.getProperty("TEMPLATE_SLIDE_ID_TABLE"),
+      closing: properties.getProperty("TEMPLATE_SLIDE_ID_CLOSING"),
+    },
+  };
 }
 
 /**
@@ -163,86 +158,79 @@ function getTemplateConfig() {
 function createSlide(presentation, data) {
   // 処理の開始をログに出力
   Logger.log(`スライド(${data.type})を生成します`);
-  try {
-    // テンプレート設定を取得
-    const templateConfig = getTemplateConfig();
-    // ソーススライドを取得
-    const sourceSlide = getSlide(
-      templateConfig.presentationId,
-      templateConfig.slideId[data.type]
-    );
-    // ソーススライドが見つからない場合はエラーを投げる
-    if (!sourceSlide) {
-      throw new Error(
-        `指定されたスライド「${
-          templateConfig.slideId[data.type]
-        }」が見つかりませんでした。`
-      );
-    }
-    // ソーススライドを複製して、プレゼンテーションに追加
-    const slide = presentation.appendSlide(
-      sourceSlide,
-      SlidesApp.SlideLinkingMode.UNLINKED
-    );
-    // テキストを置き換え
-    switch (data.type) {
-      case "title":
-        slide.replaceAllText("{{to}}", data.to);
-        slide.replaceAllText("{{title}}", data.title);
-        slide.replaceAllText("{{body}}", data.body);
-        slide.replaceAllText("{{date}}", data.date);
-        break;
-      case "agenda":
-        slide.replaceAllText("{{title}}", data.title);
-        slide.replaceAllText("{{items}}", data.items.join("\n"));
-        break;
-      case "section":
-        slide.replaceAllText("{{title}}", data.title);
-        break;
-      case "compare":
-        slide.replaceAllText("{{title}}", data.title);
-        slide.replaceAllText("{{description}}", data.description);
-        slide.replaceAllText("{{left_box_header}}", data.left_box_header);
-        slide.replaceAllText(
-          "{{left_box_items}}",
-          data.left_box_items.join("\n")
-        );
-        slide.replaceAllText("{{right_box_header}}", data.right_box_header);
-        slide.replaceAllText(
-          "{{right_box_items}}",
-          data.right_box_items.join("\n")
-        );
-        break;
-      case "bullet":
-        slide.replaceAllText("{{title}}", data.title);
-        slide.replaceAllText("{{header}}", data.header);
-        slide.replaceAllText("{{items}}", data.items.join("\n"));
-        break;
-      case "table":
-        slide.replaceAllText("{{title}}", data.title);
-        slide.replaceAllText("{{description}}", data.description);
-        handleTableSlide(slide, data.headers, data.rows);
-        break;
-      case "closing":
-        break;
-    }
-    // テキスト上の太字と重要語に対してスタイルを適用
-    handleTextStyle(slide);
-    // スピーカーノートを設定
-    if (data.notes) {
-      const notesShape = slide.getNotesPage().getSpeakerNotesShape();
-      if (notesShape) {
-        notesShape.getText().setText(data.notes);
-      }
-    }
-    // 処理の完了をログに出力
-    Logger.log(`スライド(${data.type})の生成が完了しました`);
-  } catch (e) {
-    // 処理の失敗をログに出力
-    Logger.log(
-      `スライド(${data.type})の生成中にエラーが発生しました: ${e.message}`
+  // テンプレート設定を取得
+  const templateConfig = getTemplateConfig();
+  // ソーススライドを取得
+  const sourceSlide = getSlide(
+    templateConfig.presentationId,
+    templateConfig.slideId[data.type]
+  );
+  // ソーススライドが見つからない場合はエラーを投げる
+  if (!sourceSlide) {
+    throw new Error(
+      `指定されたスライド「${
+        templateConfig.slideId[data.type]
+      }」が見つかりませんでした。`
     );
   }
+  // ソーススライドを複製して、プレゼンテーションに追加
+  const slide = presentation.appendSlide(
+    sourceSlide,
+    SlidesApp.SlideLinkingMode.UNLINKED
+  );
+  // テキストを置き換え
+  switch (data.type) {
+    case "title":
+      slide.replaceAllText("{{to}}", data.to);
+      slide.replaceAllText("{{title}}", data.title);
+      slide.replaceAllText("{{body}}", data.body);
+      slide.replaceAllText("{{date}}", data.date);
+      break;
+    case "agenda":
+      slide.replaceAllText("{{title}}", data.title);
+      slide.replaceAllText("{{items}}", data.items.join("\n"));
+      break;
+    case "section":
+      slide.replaceAllText("{{title}}", data.title);
+      break;
+    case "compare":
+      slide.replaceAllText("{{title}}", data.title);
+      slide.replaceAllText("{{description}}", data.description);
+      slide.replaceAllText("{{left_box_header}}", data.left_box_header);
+      slide.replaceAllText(
+        "{{left_box_items}}",
+        data.left_box_items.join("\n")
+      );
+      slide.replaceAllText("{{right_box_header}}", data.right_box_header);
+      slide.replaceAllText(
+        "{{right_box_items}}",
+        data.right_box_items.join("\n")
+      );
+      break;
+    case "bullet":
+      slide.replaceAllText("{{title}}", data.title);
+      slide.replaceAllText("{{header}}", data.header);
+      slide.replaceAllText("{{items}}", data.items.join("\n"));
+      break;
+    case "table":
+      slide.replaceAllText("{{title}}", data.title);
+      slide.replaceAllText("{{description}}", data.description);
+      handleTableSlide(slide, data.headers, data.rows);
+      break;
+    case "closing":
+      break;
+  }
+  // テキスト上の太字と重要語に対してスタイルを適用
+  handleTextStyle(slide);
+  // スピーカーノートを設定
+  if (data.notes) {
+    const notesShape = slide.getNotesPage().getSpeakerNotesShape();
+    if (notesShape) {
+      notesShape.getText().setText(data.notes);
+    }
+  }
+  // 処理の完了をログに出力
+  Logger.log(`スライド(${data.type})の生成が完了しました`);
 }
 
 /**
@@ -254,17 +242,10 @@ function createSlide(presentation, data) {
 function getSlide(templatePresentationId, slideId) {
   // 処理の開始をログに出力
   Logger.log(`テンプレートスライド(${slideId})を取得します`);
-  try {
-    // テンプレートプレゼンテーションを取得
-    const templatePresentation = SlidesApp.openById(templatePresentationId);
-    // テンプレートプレゼンテーションからスライド一覧を取得
-    const slides = templatePresentation.getSlides();
-    // 指定のオブジェクトIDでスライドを取得
-    return slides.find((slide) => slide.getObjectId() === slideId);
-  } catch (e) {
-    // 処理の失敗をログに出力
-    Logger.log(
-      `テンプレートスライド(${slideId})の取得中にエラーが発生しました: ${e.message}`
-    );
-  }
+  // テンプレートプレゼンテーションを取得
+  const templatePresentation = SlidesApp.openById(templatePresentationId);
+  // テンプレートプレゼンテーションからスライド一覧を取得
+  const slides = templatePresentation.getSlides();
+  // 指定のオブジェクトIDでスライドを取得
+  return slides.find((slide) => slide.getObjectId() === slideId);
 }

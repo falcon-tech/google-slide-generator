@@ -7,45 +7,40 @@
 function handleTableSlide(slide, headers, rows) {
   // 処理の開始をログに出力
   Logger.log("テーブルスライドの処理を開始します");
-  try {
-    // スライド内の表を取得
-    const tables = slide.getTables();
-    // 最初の表を対象とする
-    const table = tables[0];
-    // 現在の表の行数・列数を取得
-    const currentRows = table.getNumRows();
-    const currentCols = table.getNumColumns();
-    // 表の目標の行数・列数を計算
-    const targetRows = rows.length + 1; // ヘッダー行 + データ行
-    const targetCols = headers.length;
-    // 列数の調整
-    adjustTableColumns(table, currentCols, targetCols);
-    // 行数の調整
-    adjustTableRows(table, currentRows, targetRows);
-    // 調整後の実際の行数・列数を取得
-    const finalRows = table.getNumRows();
-    const finalCols = table.getNumColumns();
-    // ヘッダーデータを入力
-    headers.forEach((headerData, col) => {
-      const cell = table.getCell(0, col);
+  // スライド内の表を取得
+  const tables = slide.getTables();
+  // 最初の表を対象とする
+  const table = tables[0];
+  // 現在の表の行数・列数を取得
+  const currentRows = table.getNumRows();
+  const currentCols = table.getNumColumns();
+  // 表の目標の行数・列数を計算
+  const targetRows = rows.length + 1; // ヘッダー行 + データ行
+  const targetCols = headers.length;
+  // 列数の調整
+  adjustTableColumns(table, currentCols, targetCols);
+  // 行数の調整
+  adjustTableRows(table, currentRows, targetRows);
+  // 調整後の実際の行数・列数を取得
+  const finalRows = table.getNumRows();
+  const finalCols = table.getNumColumns();
+  // ヘッダーデータを入力
+  headers.forEach((headerData, col) => {
+    const cell = table.getCell(0, col);
+    const cellText = cell.getText();
+    cellText.setText(String(headerData || ""));
+  });
+  // 行データを入力
+  rows.forEach((rowData, row) => {
+    // 列数分ループ
+    for (let col = 0; col < headers.length; col++) {
+      const cell = table.getCell(row + 1, col);
       const cellText = cell.getText();
-      cellText.setText(String(headerData || ""));
-    });
-    // 行データを入力
-    rows.forEach((rowData, row) => {
-      // 列数分ループ
-      for (let col = 0; col < headers.length; col++) {
-        const cell = table.getCell(row + 1, col);
-        const cellText = cell.getText();
-        cellText.setText(String(rowData?.[col] || ""));
-      }
-    });
-    // 処理の完了をログに出力
-    Logger.log("テーブルスライドの処理が完了しました");
-  } catch (e) {
-    // 処理の失敗をログに出力
-    Logger.log(`テーブルスライドの処理中にエラーが発生しました: ${e.message}`);
-  }
+      cellText.setText(String(rowData?.[col] || ""));
+    }
+  });
+  // 処理の完了をログに出力
+  Logger.log("テーブルスライドの処理が完了しました");
 }
 
 /**
@@ -57,19 +52,14 @@ function handleTableSlide(slide, headers, rows) {
 function adjustTableColumns(table, currentCols, targetCols) {
   // 処理の開始をログに出力
   Logger.log(`列の調整を開始します`);
-  try {
-    if (targetCols > currentCols) {
-      Array.from({ length: targetCols - currentCols }).forEach((_, index) => {
-        const insertColumnIndex = currentCols + index;
-        table.insertColumn(insertColumnIndex);
-      });
-    }
-    // 処理の完了をログに出力
-    Logger.log(`列の調整が完了しました`);
-  } catch (e) {
-    // 処理の失敗をログに出力
-    Logger.log(`列の調整中にエラーが発生しました: ${e.message}`);
+  if (targetCols > currentCols) {
+    Array.from({ length: targetCols - currentCols }).forEach((_, index) => {
+      const insertColumnIndex = currentCols + index;
+      table.insertColumn(insertColumnIndex);
+    });
   }
+  // 処理の完了をログに出力
+  Logger.log(`列の調整が完了しました`);
 }
 
 /**
@@ -81,17 +71,12 @@ function adjustTableColumns(table, currentCols, targetCols) {
 function adjustTableRows(table, currentRows, targetRows) {
   // 処理の開始をログに出力
   Logger.log(`行の調整を開始します`);
-  try {
-    if (targetRows > currentRows) {
-      Array.from({ length: targetRows - currentRows }).forEach((_, index) => {
-        const insertRowIndex = currentRows + index;
-        table.insertRow(insertRowIndex);
-      });
-    }
-    // 処理の完了をログに出力
-    Logger.log(`行の調整が完了しました`);
-  } catch (e) {
-    // 処理の失敗をログに出力
-    Logger.log(`行の調整中にエラーが発生しました: ${e.message}`);
+  if (targetRows > currentRows) {
+    Array.from({ length: targetRows - currentRows }).forEach((_, index) => {
+      const insertRowIndex = currentRows + index;
+      table.insertRow(insertRowIndex);
+    });
   }
+  // 処理の完了をログに出力
+  Logger.log(`行の調整が完了しました`);
 }
