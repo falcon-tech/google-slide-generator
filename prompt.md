@@ -79,139 +79,139 @@
 ```json
 [
   {
-    type: "title",
-    to: "クライアント 御中",
-    title: "メインタイトル",
-    body: "本文",
-    date: "2025.08.29",
-    notes: "スピーカノート"
+    "type": "title",
+    "to": "クライアント 御中",
+    "title": "メインタイトル",
+    "body": "本文",
+    "date": "2025.08.29",
+    "notes": "スピーカノート"
   },
   {
-    type: "agenda",
-    title: "アジェンダ",
-    items: [
+    "type": "agenda",
+    "title": "アジェンダ",
+    "items": [
       "アイテム1",
       "アイテム2",
       "アイテム3"
     ],
-    notes: "スピーカノート"
+    "notes": "スピーカノート"
   },
   {
-    type: "section",
-    title: "章タイトル",
-    notes: "スピーカノート"
+    "type": "section",
+    "title": "章タイトル",
+    "notes": "スピーカノート"
   },
   {
-    type: "compare_two_boxes",
-    title: "比較",
-    description: "比較の説明",
-    box1_header: "ボックス1ヘッダー",
-    box1_items: [
+    "type": "compare_two_boxes",
+    "title": "比較",
+    "description": "比較の説明",
+    "box1_header": "ボックス1ヘッダー",
+    "box1_items": [
       "ボックス1アイテム1",
       "ボックス1アイテム2",
       "ボックス1アイテム3"
     ],
-    box2_header: "ボックス2ヘッダー",
-    box2_items: [
+    "box2_header": "ボックス2ヘッダー",
+    "box2_items": [
       "ボックス2アイテム1",
       "ボックス2アイテム2",
       "ボックス2アイテム3"
     ],
-    notes: "スピーカノート"
+    "notes": "スピーカノート"
   },
   {
-    type: "compare_two_boxes",
-    title: "比較",
-    description: "比較の説明",
-    box1_header: "ボックス1ヘッダー",
-    box1_items: [
+    "type": "compare_two_boxes",
+    "title": "比較",
+    "description": "比較の説明",
+    "box1_header": "ボックス1ヘッダー",
+    "box1_items": [
       "ボックス1アイテム1",
       "ボックス1アイテム2",
       "ボックス1アイテム3"
     ],
-    box2_header: "ボックス2ヘッダー",
-    box2_items: [
+    "box2_header": "ボックス2ヘッダー",
+    "box2_items": [
       "**ボックス2**[[アイテム1]]",
       "**ボックス2アイテム2**",
       "[[ボックス2アイテム3]]"
     ],
-    notes: "スピーカノート"
+    "notes": "スピーカノート"
   },
   {
-    type: "compare_three_boxes",
-    title: "比較",
-    description: "比較の説明",
-    box1_header: "ボックス1ヘッダー",
-    box1_items: [
+    "type": "compare_three_boxes",
+    "title": "比較",
+    "description": "比較の説明",
+    "box1_header": "ボックス1ヘッダー",
+    "box1_items": [
       "ボックス1アイテム1",
       "ボックス1アイテム2",
       "ボックス1アイテム3"
     ],
-    box2_header: "ボックス2ヘッダー",
-    box2_items: [
+    "box2_header": "ボックス2ヘッダー",
+    "box2_items": [
       "**ボックス2**[[アイテム1]]",
       "**ボックス2アイテム2**",
       "[[ボックス2アイテム3]]"
     ],
-    box3_header: "ボックス3ヘッダー",
-    box3_items: [
+    "box3_header": "ボックス3ヘッダー",
+    "box3_items": [
       "**ボックス3**[[アイテム1]]",
       "**ボックス3アイテム2**",
       "[[ボックス3アイテム3]]"
     ],
-    notes: "スピーカノート"
+    "notes": "スピーカノート"
   },
   {
-    type: "compare_four_boxes",
-    title: "比較",
-    description: "比較の説明",
-    box1_header: "ボックス1ヘッダー",
-    box1_items: [
+    "type": "compare_four_boxes",
+    "title": "比較",
+    "description": "比較の説明",
+    "box1_header": "ボックス1ヘッダー",
+    "box1_items": [
       "ボックス1アイテム1",
       "ボックス1アイテム2",
       "ボックス1アイテム3"
     ],
-    box2_header: "ボックス2ヘッダー",
-    box2_items: [
+    "box2_header": "ボックス2ヘッダー",
+    "box2_items": [
       "**ボックス2**[[アイテム1]]",
       "**ボックス2アイテム2**",
       "[[ボックス2アイテム3]]"
     ],
-    box3_header: "ボックス3ヘッダー",
-    box3_items: [
+    "box3_header": "ボックス3ヘッダー",
+    "box3_items": [
       "**ボックス3**[[アイテム1]]",
       "**ボックス3アイテム2**",
       "[[ボックス3アイテム3]]"
     ],
-    box4_header: "ボックス4ヘッダー",
-    box4_items: [
+    "box4_header": "ボックス4ヘッダー",
+    "box4_items": [
       "**ボックス4**[[アイテム1]]",
       "**ボックス4アイテム2**",
       "[[ボックス4アイテム3]]"
     ],
-    notes: "スピーカノート"
+    "notes": "スピーカノート"
   },
   {
-    type: "bullet",
-    title: "箇条書き",
-    header: "ヘッダー",
-    items: [
+    "type": "bullet",
+    "title": "箇条書き",
+    "header": "ヘッダー",
+    "items": [
       "アイテム1",
       "アイテム2",
       "アイテム3"
     ],
-    notes: "スピーカノート"
+    "notes": "スピーカノート"
   },
   {
-    type: "table",
-    title: "表",
-    description: "表の説明",
-    headers: [
+    "type": "table",
+    "title": "表",
+    "description": "表の説明",
+    "headers": [
       "ヘッダー1",
       "ヘッダー2",
       "ヘッダー3"
     ],
-    rows: [
+    "rows": [
       [
         "データ1-1",
         "データ2-1",
@@ -223,11 +223,11 @@
         "データ3-2"
       ]
     ],
-    notes: "スピーカノート"
+    "notes": "スピーカノート"
   },
   {
-    type: "closing",
-    notes: "スピーカノート"
+    "type": "closing",
+    "notes": "スピーカノート"
   }
 ]
 ```
